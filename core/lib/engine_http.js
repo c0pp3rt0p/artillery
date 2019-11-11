@@ -72,7 +72,7 @@ HttpEngine.prototype.createScenario = function(scenarioSpec, ee) {
   scenarioSpec.flow = newFlow;
 
   let tasks = _.map(scenarioSpec.flow, function(rs) {
-    return self.step(rs, ee, {
+    return self.step(scenarioSpec, rs, ee, {
       beforeRequest: scenarioSpec.beforeRequest,
       afterResponse: scenarioSpec.afterResponse,
       onError: scenarioSpec.onError
@@ -82,7 +82,7 @@ HttpEngine.prototype.createScenario = function(scenarioSpec, ee) {
   return self.compile(tasks, scenarioSpec.flow, ee);
 };
 
-HttpEngine.prototype.step = function step(requestSpec, ee, opts) {
+HttpEngine.prototype.step = function step(scenarioSpec, requestSpec, ee, opts) {
 
   opts = opts || {};
   let self = this;
@@ -434,7 +434,7 @@ HttpEngine.prototype.step = function step(requestSpec, ee, opts) {
               const endedAt = process.hrtime(startedAt);
               let delta = (endedAt[0] * 1e9) + endedAt[1];
               debugRequests("request end: %s", req.path);
-              ee.emit('response', delta, code, context._uid);
+              ee.emit('response', delta, code, context._uid, requestParams, scenarioSpec.name);
             });
           }).on('end', function() {
             context._successCount++;
